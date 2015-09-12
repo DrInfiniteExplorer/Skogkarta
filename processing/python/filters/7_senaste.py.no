@@ -1,0 +1,37 @@
+
+
+nya = new(filenameNoZip)
+
+#nya.remove_matching(gamla , "==", "ARENDEBET").save("nya_avverkning")
+
+def getXLatest(limit):
+	lista = []
+	def addNew(feature):
+		arende = feature.attribute("Beteckn")
+		if arende in lista:
+			return
+		if len(lista) == limit:
+			lista[:-1] = lista[1:]
+			lista[limit-1] = arende
+		else:
+			lista.append(arende)
+
+	nya.foreach(addNew)
+
+	def inList(feature):
+		arende = feature.attribute("Beteckn")
+		return arende in lista
+
+	return nya.filter(inList).save("senaste_%d" % limit)
+
+latest7 = getXLatest(7)
+latest3 = getXLatest(3)
+
+latest7.makeJSON("latest7.json");
+latest7.addAreaField().makeJSON("area7.json");
+
+from shutil import copyfile
+copyfile("area7.json", "../../json/"+filenameNoZip+"/senaste_7.json")
+
+del latest3
+del latest7

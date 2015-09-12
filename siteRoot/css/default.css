@@ -1,0 +1,97 @@
+
+
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+
+#navbar {
+	height:10%;
+	display:table;
+}
+
+#main {
+	height:90%;
+}
+
+#entries {
+	height:100%;
+	float:left;
+	width:200px;
+	padding:1em;
+	overflow:scroll;
+	cursor:pointer;
+}
+
+#toggleEntries {
+	text-align:center;
+	width:25px;
+	height:25px;
+	background-color:red;
+}
+
+#entryList {
+	
+}
+
+#map-canvas {
+	height:100%;
+	//float:right;
+	//width:100%;
+}
+
+.changeArea {
+    display:block;
+    float:left;
+	padding:0.5em;
+    margin:10px;
+	text-align:center;
+    background-color:#FFCBDB;
+}
+
+.setData {
+    display:block;
+    float:left;
+	padding:0.5em;
+    margin:10px;
+	text-align:center;
+    background-color:#40E0D0;
+}
+
+.copyright {
+    display:block;
+    float:right;
+	padding:0.5em;
+    margin:10px;
+	text-align:center;
+    background-color:#008080;
+}
+
+.entry {
+	display:block;
+	 text-overflow: ellipsis;
+	 height:1em;
+	 white-space: nowrap;
+}
+
+.clear {
+	clear:both;
+}
+
+div.map-popup {
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 340px;
+    width : 260px;
+}
+
+.map-popup p {
+    margin:0px;
+    display:inline;
+}
