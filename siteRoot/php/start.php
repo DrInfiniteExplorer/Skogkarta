@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-$areas = file_get_contents("json/areas.json");
+$areas = file_get_contents(getenv("DATA_PATH") . "/static/areas.json");
 $areas = json_decode($areas);
 
 foreach($areas as $name => $filename) {

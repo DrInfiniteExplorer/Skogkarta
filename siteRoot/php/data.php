@@ -21,7 +21,7 @@ if($area and $data)
     $file_name  = $path_parts['basename'];
     $data  = $file_name;
 
-    readfile("./json/$area/$data.json");
+    readfile(getenv("DATA_PATH") . "/dynamic/$area/$data.json");
 }
 else
 {

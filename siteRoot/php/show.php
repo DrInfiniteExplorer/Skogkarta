@@ -30,7 +30,7 @@ function codeInclude()
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<title>Skogsdata!</title>
-	<link type="text/css" rel="stylesheet" media="screen"  href="/default.css" />
+	<link type="text/css" rel="stylesheet" media="screen"  href="/css/default.css" />
 
 	<script type="text/javascript"  src="/js/jquery-2.0.3.min.js"> </script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRTpJi_z1mwjqsSLYqxuzgyWomIiKLjDA&amp;sensor=false"></script>
