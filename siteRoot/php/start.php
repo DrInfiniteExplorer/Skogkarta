@@ -5,8 +5,7 @@ $areas = file_get_contents(getenv("DATA_PATH") . "/static/areas.json");
 $areas = json_decode($areas);
 
 foreach($areas as $name => $filename) {
-    $noZip = substr($filename, 0, -4);
-    echo("<a href='./show/$noZip'>$name</a><br/>");
+    echo("<a href='./show/$filename'>$name</a><br/>");
 }
 
 ?>

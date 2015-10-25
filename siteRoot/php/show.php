@@ -31,27 +31,22 @@ function codeInclude()
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<title>Skogsdata!</title>
 	<link type="text/css" rel="stylesheet" media="screen"  href="/css/default.css" />
+   <link rel="stylesheet" href="/css/ol.css" type="text/css">
 
 	<script type="text/javascript"  src="/js/jquery-2.0.3.min.js"> </script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRTpJi_z1mwjqsSLYqxuzgyWomIiKLjDA&amp;sensor=false"></script>
-    <script type="text/javascript" src="http://www.gis.scb.se/how/sweref99/bjrt90latlong.js"></script>
+   <script src="/js/proj4.js" type="text/javascript"></script>
+   <script src="/js/ol-debug.js" type="text/javascript"></script>
+   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBRTpJi_z1mwjqsSLYqxuzgyWomIiKLjDA&amp;sensor=false"></script>
+    
     <?php codeInclude(); ?>
-	
+    
   </head>
   
   <body>
-	<div id="navbar">
-        <a class="changeArea" href="/">Byt län</a>
-        <a class="copyright" href="http://www.skogsstyrelsen.se/Aga-och-bruka/Skogsbruk/Karttjanster/Skogsdataportalen1/">Källa ©Skogsstyrelsen</a>
-	</div>
-	<div id="main">
-		<div id="entries">
-			<div id="toggleEntries">&lt;&lt;</div>
-			<div id="entryList">
-			</div>
-		</div>
-		<div id="map-canvas"></div>
-		<div class="clear"></div>
+	<div id="map" class="map">
+		<div id="olmap" class="fill" style="z-index:1"></div>
+		<div class="fill gmapHiderr"></div>
+      <div id="gmap" class="fill googlemap"></div>
 	</div>
 	
   </body>

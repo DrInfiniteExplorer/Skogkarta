@@ -10,7 +10,7 @@ function param($a)
 $area=param("area");
 $data=param("data");
 
-if($area and $data)
+if($area!=null and $data!=null)
 {
 
     $path_parts = pathinfo($area);

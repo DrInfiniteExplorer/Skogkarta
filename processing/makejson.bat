@@ -13,6 +13,7 @@ goto Main
    mkdir %ItemPath% 2>NUL
    
    set Filter=-filter "new Date(Inkomdatum) > (new Date() - 1000*60*60*24*7*260)" -o format=geojson "%ItemPath%\260.json" force bbox
+   set Filter=%Filter% -filter "new Date(Inkomdatum) > (new Date() - 1000*60*60*24*7*52)" -o format=geojson "%ItemPath%\52.json" force bbox
    set Filter=%Filter% -filter "new Date(Inkomdatum) > (new Date() - 1000*60*60*24*7*6)" -o format=geojson "%ItemPath%\6.json" force bbox
    set Filter=%Filter% -filter "new Date(Inkomdatum) > (new Date() - 1000*60*60*24*7*3)" -o format=geojson "%ItemPath%\3.json" force bbox
    set Filter=%Filter% -filter "new Date(Inkomdatum) > (new Date() - 1000*60*60*24*7*2)" -o format=geojson "%ItemPath%\2.json" force bbox
