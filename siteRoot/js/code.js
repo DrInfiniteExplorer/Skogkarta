@@ -17,6 +17,13 @@ $(function(){
    var mapCenterY;
    var mapZoom = 10;
    
+   if (!String.prototype.startsWith) {
+      String.prototype.startsWith = function(searchString, position) {
+         position = position || 0;
+         return this.indexOf(searchString, position) === position;
+      };
+   }   
+   
    if (window.location.hash !== '') {
       var hash = window.location.hash.replace('#=', '');
       var params={};
@@ -124,28 +131,52 @@ $(function(){
    };
    ol.inherits(app.SelectControl, ol.control.Control);
    
-      var olMapDiv = document.getElementById('olmap');
+   app.IconButtonControl = function(opt_options) {
+      var options = opt_options || {};
+      
+      var iconUrl = options.iconUrl || "";
+      var icon = $('<input>');
+      icon.attr("type","image");
+      icon.attr("src",iconUrl);
+      this.icon = icon;      
+            
+      var this_ = this;
+      
+      var element = $('<div>').addClass('ol-unselectable').addClass('ol-control');
+      var className = options.className || 'iconbutton-control';
+      element.addClass(className)
+      element.append(icon);
+      
+      ol.control.Control.call(this, {
+         element: element.get(0),
+         target: options.target
+      });
+   
+   };
+   ol.inherits(app.IconButtonControl, ol.control.Control);
+
+   var olMapDiv = document.getElementById('olmap');
    var stylesZoom0 = {
       'Polygon': [new ol.style.Style({
          stroke: new ol.style.Stroke({
-            color: 'rgba(255, 0, 0, 0.8)',
+            color: 'rgba(51, 153, 204, 0.8)',
             //lineDash: [4],
             width: 1.25
          }),
          fill: new ol.style.Fill({
-            color: 'rgba(255, 0, 0, 0.4)'
+            color: 'rgba(51, 153, 204, 0.4)'
          })
       })],
    };
    var stylesZoom15 = {
       'Polygon': [new ol.style.Style({
          stroke: new ol.style.Stroke({
-            color: '#3399CC',
+            color: 'rgba(51, 153, 204, 1.0)',
             //lineDash: [4],
             width: 1.25
          }),
          fill: new ol.style.Fill({
-            color: 'rgba(255, 255, 255, 0.0)'
+            color: 'rgba(51, 153, 204, 0.0)'
          })
       })],
    };
@@ -162,11 +193,11 @@ $(function(){
       })],
    };
    
-      proj4.defs("EPSG:3006", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+   proj4.defs("EPSG:3006", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
 
-      var geoJSONFormat = new ol.format.GeoJSON({
-        defaultDataProjection: 'EPSG:3006'
-      })
+   var geoJSONFormat = new ol.format.GeoJSON({
+     defaultDataProjection: 'EPSG:3006'
+   })
       
       
       
@@ -314,14 +345,101 @@ $(function(){
       dataSets[value].load();
    });
    
+   /* Legend */
+   
+   var legendDiv = $("#legend");
+   var legendList = legendDiv.children("#legend-list");
+   var legendCloser = legendDiv.children("#legend-closer");
+   legendCloser.click(function() {
+      legendDiv.toggle(100);
+   });
+
+   var iconDisplayLegend = new app.IconButtonControl({
+      iconUrl:'/iconLegend.png',
+      className:'legend-control',
+   });
+   $(iconDisplayLegend.element).click( function() {
+      legendDiv.toggle(100);         
+   })
+
+   setTimeout(function() {
+      var pos = $(iconDisplayLegend.element).offset();
+      pos.left = pos.left + 25;
+      legendDiv.offset(pos);
+   }, 1000);
+   
+   function addLegend(displayName, colorOutline, colorFill) {
+      if(!colorFill)
+      {
+         var style = colorOutline;
+         var poly = style['Polygon'];
+         var first = poly[0];
+         var stroke = first.getStroke();
+         var fill = first.getFill();
+         colorOutline = stroke.getColor();
+         colorFill = fill.getColor();
+      }
+      var row = $('<li>').addClass('legend-list-item');
+      var legendKey = $('<div>').addClass('legend-key');
+      var legendName=$('<span>');
+      legendName.text(displayName);
+      legendKey.css({ 'border-color': colorOutline, 'border-width':'2px', 'border-style':'solid', 'background-color': colorFill});
+      row.append(legendKey);
+      row.append(displayName);
+      legendList.append(row);
+   }
+   
+   addLegend('Avverkningsanmälan', stylesZoom0);
+   
+   /* End legend */
+   
+
+   /* Metadata */
+   
+   var metadataShort = $('#meta-short');
+   function isDisplayable(x){
+      return (typeof x == 'number') || (typeof x == 'string')
+   }
+   function setMetadata(feature) {
+      metadataShort.empty();
+      var attributes = feature.getProperties();
+      var table = $('<table>');
+      var headings = $('<tr>');
+      var datas = $('<tr>');
+      $.each(attributes, function(key, value) {
+         if(!isDisplayable(value)) return;
+         var heading = $('<th>');
+         heading = heading.text(key);
+         headings.append(heading);
+         if(typeof value == 'string' && (value.startsWith("http://") || value.startsWith("https://"))) {
+            value = $('<a>').attr('href', value).attr('target', 'blank').append('[Info]');
+         }
+         var data = $('<td>');
+         data.append(value);
+         datas.append(data);
+      });
+      table.append(headings, datas);
+      metadataShort.append(table);
+   }
+   
+   function grabFeatureForMetadata(event) {
+      var pixel = event.pixel;
+      var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+         return feature;
+      });
+      setMetadata(feature);
+   }
+   
+   /* End metadata*/
    
    var controls = ol.control.defaults({
       attributionOptions: ({
-         collapsible: false
+         collapsible: true
       })
    }).extend([
       selectBaseLayer,
-      selectDataSet
+      selectDataSet,
+      iconDisplayLegend,
    ]);
    
    var interactions = ol.interaction.defaults({
@@ -344,6 +462,8 @@ $(function(){
      controls : controls,
    });
    
+   map.on('click', grabFeatureForMetadata);
+   
    //$.each(baseLayerList, function() { this.setVisible(false); });
    selectBaseLayer.select.val("0");
    selectBaseLayer.select.change();
@@ -364,6 +484,8 @@ $(function(){
          })
       })],
    };
+   addLegend('Nyckelbiotoper', stylesNyckelbiotoper);
+   
    var styleFunctionNyckelbiotoper = function(feature, resolution) {
       // resolution is not zoom. Is it meters per pizel or something?
       var zoom = view.getZoom();
@@ -400,6 +522,9 @@ $(function(){
          })
       })],
    };
+   addLegend('Naturvärden', stylesNaturvarden);
+   
+   
    var styleFunctionNaturvarden = function(feature, resolution) {
       // resolution is not zoom. Is it meters per pizel or something?
       var zoom = view.getZoom();

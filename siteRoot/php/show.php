@@ -47,7 +47,13 @@ function codeInclude()
 		<div id="olmap" class="fill" style="z-index:1"></div>
 		<div class="fill gmapHiderr"></div>
       <div id="gmap" class="fill googlemap"></div>
+      
+      <div id="legend" class="legend">
+         <a id="legend-closer" class="legend-closer"></a>
+         <ul id="legend-list" class="legend-list" ></ul>
+      </div>
 	</div>
+   <div id="meta-short" class="meta-short"></div>
 	
   </body>
 </html>
