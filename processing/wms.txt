@@ -1,0 +1,8 @@
+
+http://docs.geoserver.org/2.7.0/user/services/wms/reference.html
+
+GetCapabilities
+?service=wms&version=1.3&request=GetCapabilities
+
+http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotop/MapServer/WmsServer?service=wms&version=1.3&request=GetCapabilities
+

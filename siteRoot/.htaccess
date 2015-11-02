@@ -7,6 +7,7 @@ RewriteRule ^/*code/([^/]+)/(.+)$ /js/code.js?area=$1&data=$2
 RewriteRule ^/*code/([^/]+)/*$ /js/code.js?area=$1
 
 RewriteRule ^/*$ php/start.php
+RewriteRule ^/*proxy/.*$ php/proxy.php
 RewriteRule ^/*show/([^/.]+)/*$ php/show.php?area=$1
 RewriteRule ^/*show/([^/.]+)/([^/]+)/*$ php/show.php?area=$1&data=$2
 RewriteRule ^/*data/([^/.]+)/([^.]+)$ php/data.php?area=$1&data=$2

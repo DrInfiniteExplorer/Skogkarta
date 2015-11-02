@@ -19,18 +19,22 @@ goto Main
    goto :EOF
    
 :Main
+
    mkdir ZipFiles 2>NUL
    touch ZipFiles\AvverkAnm\sksAvverkAnm.zip 
+
+   :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaAvverkningsanmalan/MapServer/WmsServer?service=wms&version=1.3&request=GetCapabilities
    call :Download ZipFiles\AvverkAnm AvverkAnm.xml http://geodpags.skogsstyrelsen.se/geodataport/feeds/AvverkAnm.xml http://geodpags.skogsstyrelsen.se/geodataport/data/
    del ZipFiles\AvverkAnm\sksAvverkAnm.zip 
 
    :: Två alternativ?
    :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotop/MapServer/WmsServer?
-   :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotoper/MapServer/WmsServer?
+   :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotop/MapServer/WmsServer?service=wms&version=1.3&request=GetCapabilities
    call :Download ZipFiles\Nyckelbiotoper Nyckelbiotoper.xml http://geodpags.skogsstyrelsen.se/geodataport/feeds/Nyckelbiotoper.xml http://geodpags.skogsstyrelsen.se/geodataport/data/
    
    
    :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaObjektnaturvarde/MapServer/WmsServer?
+   :: http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaObjektnaturvarde/MapServer/WmsServer?service=wms&version=1.3&request=GetCapabilities
    call :Download ZipFiles\Naturvarden Naturvarden.xml http://geodpags.skogsstyrelsen.se/geodataport/feeds/Naturvarden.xml http://geodpags.skogsstyrelsen.se/geodataport/data/
       
       

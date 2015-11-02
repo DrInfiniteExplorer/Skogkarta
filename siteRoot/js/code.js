@@ -70,6 +70,12 @@ $(function(){
       fitMapToExtent(vectorLayer.getSource().getExtent())
       fitMapOnFirstLoad = function(){}
    }
+   
+   var wmsAvverkning = new ol.source.TileWMS({
+     url: 'http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaAvverkningsanmalan/MapServer/WmsServer?',
+     params: {'LAYERS': 'Avverkningsanmalan_Skogsstyrelsen'}
+   });
+   
 
    loadData = function(dataSetName) {
       dataSet = dataSetName;
@@ -99,6 +105,7 @@ $(function(){
           style: styleFunction,
       })
       map.addLayer(vectorLayer);
+      vectorLayer.wmsSource = wmsAvverkning;
    }
 
    
@@ -400,19 +407,21 @@ $(function(){
    function isDisplayable(x){
       return (typeof x == 'number') || (typeof x == 'string')
    }
-   function setMetadata(feature) {
+   function setMetadata(attributes) {
       metadataShort.empty();
-      if(!feature) {
+      if(!attributes) {
          metadataShort.hide(100);
          return;
       }
       metadataShort.show(50);
-      var attributes = feature.getProperties();
       var table = $('<table>');
       var headings = $('<tr>');
       var datas = $('<tr>');
       $.each(attributes, function(key, value) {
          if(!isDisplayable(value)) return;
+         if(!value.length) return;
+         if(value == "Null") return;
+         if(key.startsWith("Shape.ST") || key == "Shape") return;
          var heading = $('<th>');
          heading = heading.text(key);
          headings.append(heading);
@@ -429,10 +438,31 @@ $(function(){
    
    function grabFeatureForMetadata(event) {
       var pixel = event.pixel;
-      var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+      var layer;
+      var feature = map.forEachFeatureAtPixel(pixel, function(feature, _layer) {
+         layer = _layer;
          return feature;
       });
-      setMetadata(feature);
+      var attributes = feature && feature.getProperties();
+      if( /*!attributes && */ layer && layer.wmsSource && layer.wmsSource.getGetFeatureInfoUrl){
+         var source = layer.wmsSource;
+         var featureUrl = source.getGetFeatureInfoUrl(
+            event.coordinate, view.getResolution(),
+            'EPSG:3857', {'INFO_FORMAT':'application/geojson'});
+         featureUrl = encodeURIComponent(featureUrl);
+         var url = '/proxy/?url=' + featureUrl;
+         $.getJSON(url, function(data) {
+            var feature = data.contents.features[0];
+            setMetadata(feature.properties);
+         }).fail(function(err){
+            console.log("Error");
+            console.log(err);
+         });
+         return;
+      }
+      
+      
+      setMetadata(attributes);
    }
    
    /* End metadata*/
@@ -502,7 +532,6 @@ $(function(){
       url: "/data/sksNyckelbiotoper" + area + "/0",
       format: geoJSONFormat,
    })
-   
    var vectorLayerNyckelbiotoper = new ol.layer.Vector({
        title: 'Nyckelbiotoper',
        source: vectorSourcesksNyckelbiotoper,
@@ -514,7 +543,15 @@ $(function(){
       vectorLayerNyckelbiotoper.setVisible(zoom >= 12);
       
    });
-
+   var wmsNyckelbiotoper = new ol.source.TileWMS({
+     url: 'http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotop/MapServer/WmsServer?',
+     params: {'LAYERS': 'Nyckelbiotop_Skogsstyrelsen'}
+   });
+   vectorLayerNyckelbiotoper.wmsSource = wmsNyckelbiotoper;
+   
+   
+   
+   
    /* **Naturvärden** */      
    var stylesNaturvarden = {
       'Polygon': [new ol.style.Style({
@@ -553,6 +590,11 @@ $(function(){
       vectorLayerNaturvarden.setVisible(zoom >= 12);
       
    });
+   var wmsNaturvarden = new ol.source.TileWMS({
+     url: 'http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaObjektnaturvarde/MapServer/WmsServer?',
+     params: {'LAYERS': 'Objektnaturvarde_Skogsstyrelsen'}
+   });
+   vectorLayerNaturvarden.wmsSource = wmsNaturvarden;
 
    /* Geolocation */
    
@@ -596,7 +638,11 @@ $(function(){
      })
    });
    map.addLayer(trackingOverlay);
+   
+   /* End Geolocation */
 	
+   
+   /* Update URL to contain zoom and position */
    map.on('moveend', updateLinkState);
    
 })
