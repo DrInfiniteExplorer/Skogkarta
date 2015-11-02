@@ -402,6 +402,11 @@ $(function(){
    }
    function setMetadata(feature) {
       metadataShort.empty();
+      if(!feature) {
+         metadataShort.hide(100);
+         return;
+      }
+      metadataShort.show(50);
       var attributes = feature.getProperties();
       var table = $('<table>');
       var headings = $('<tr>');

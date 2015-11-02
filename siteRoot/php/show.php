@@ -53,7 +53,7 @@ function codeInclude()
          <ul id="legend-list" class="legend-list" ></ul>
       </div>
 	</div>
-   <div id="meta-short" class="meta-short"></div>
+   <div id="meta-short" class="meta-short" style="display:none"></div>
 	
   </body>
 </html>
