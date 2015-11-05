@@ -112,3 +112,25 @@ div.googlemap {
    border: 1px solid #cccccc;
    z-index: 102;
 }
+
+.meta-popup {
+   position: absolute;
+   background-color: white;
+   padding: 15px;
+   border-radius: 10px;
+   border: 1px solid #cccccc;
+   min-width: 200px;
+   z-index: 101;
+}
+
+.meta-closer {
+   text-decoration: none;
+   position:absolute;
+   top: 2px;
+   right: 8px;
+   cursor: pointer;
+}
+ 
+.meta-closer:after {
+   content: "X";
+}

@@ -24,6 +24,12 @@ goto Main
    call mapshaper "%ItemPath%\6.json" no-topology -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "%ItemPath%\6.json" force bbox precision=0.01
    call mapshaper "%ItemPath%\3.json" no-topology -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "%ItemPath%\3.json" force bbox precision=0.01
    call mapshaper "%ItemPath%\2.json" no-topology -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "%ItemPath%\2.json" force bbox precision=0.01
+
+   call mapshaper "%ItemPath%\260.json" -simplify 0.1 -o format=geojson "%ItemPath%\260_simple.json" force bbox precision=0.01
+   call mapshaper "%ItemPath%\52.json"  -simplify 0.1 -o format=geojson "%ItemPath%\52_simple.json" force bbox precision=0.01
+   call mapshaper "%ItemPath%\6.json"   -simplify 0.1 -o format=geojson "%ItemPath%\6_simple.json" force bbox precision=0.01
+   call mapshaper "%ItemPath%\3.json"   -simplify 0.1 -o format=geojson "%ItemPath%\3_simple.json" force bbox precision=0.01
+   call mapshaper "%ItemPath%\2.json"   -simplify 0.1 -o format=geojson "%ItemPath%\2_simple.json" force bbox precision=0.01
    
    goto :EOF
 
@@ -35,11 +41,13 @@ goto Main
    for /D %%a in (Unzipped\Nyckelbiotoper\*) do (
       mkdir "json\%%~na" 2>NUL
       call mapshaper "%%a\*.shp" no-topology -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "json\%%~na\0.json" force bbox precision=0.01
+      call mapshaper "%%a\*.shp" -simplify 0.1 -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "json\%%~na\0_simple.json" force bbox precision=0.01
    )
    
    for /D %%a in (Unzipped\Naturvarden\*) do (
       mkdir "json\%%~na" 2>NUL
       call mapshaper "%%a\*.shp" no-topology -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "json\%%~na\0.json" force bbox precision=0.01
+      call mapshaper "%%a\*.shp" -simplify 0.1 -each '$.properties={OBJECTID:$.properties.OBJECTID};' -o format=geojson "json\%%~na\0_simple.json" force bbox precision=0.01
    )
 
    for /D %%a in (Unzipped\AvverkAnm\*) do call :Process %%a

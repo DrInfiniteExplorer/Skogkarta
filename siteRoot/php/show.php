@@ -48,9 +48,13 @@ function codeInclude()
 		<div class="fill gmapHiderr"></div>
       <div id="gmap" class="fill googlemap"></div>
       
-      <div id="legend" class="legend">
+      <div id="legend" class="legend" style="display:none">
          <a id="legend-closer" class="legend-closer"></a>
          <ul id="legend-list" class="legend-list" ></ul>
+      </div>
+      <div id="meta-popup" class="meta-popup" >
+         <a id="meta-closer" class="meta-closer"></a>
+         <div id="meta-content" class="meta-content"></div>
       </div>
 	</div>
    <div id="meta-short" class="meta-short" style="display:none"></div>
