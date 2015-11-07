@@ -77,6 +77,9 @@ $(function(){
          map.getView().fit(extent, map.getSize());
       }
       fitMapToExtent(vectorLayer.getSource().getExtent())
+      // If we change dataset, there might be a first load for many sources
+      // But we dont want to reposition in all those cases.
+      // So do this to disable any beyond the first repositioning.
       fitMapOnFirstLoad = function(){}
    }
    
@@ -85,8 +88,25 @@ $(function(){
      params: {'LAYERS': 'Avverkningsanmalan_Skogsstyrelsen'}
    });
    
+   function jsonStartLoad(which) {
+      $('#loading-indicator-' + which).show();
+      $('#loading-indicator').show();
+   }
+
+   function jsonEndLoad(which) {
+      $('#loading-indicator-' + which).hide();
+      var indicator = $('#loading-indicator');
+      var children = indicator.find('.loading-indicator-entry:visible');
+      var allHidden = children.length == 0;
+      if(allHidden) {
+         indicator.hide();
+      }
+   }
+   
+   
 
    loadData = function(dataSetName) {
+      jsonStartLoad('avverk');
       dataSet = dataSetName;
       updateLinkState();
       var url = "/data/sksAvverkAnm" + area + "/" + dataSetName;
@@ -96,26 +116,20 @@ $(function(){
       var vectorSource = new ol.source.Vector({
          url: url,
          format: geoJSONFormat,
-         //loader: function(extent, resolution, projection) {
-         //   //var url = 'geojson2.php?p=' + extent.join(',');
-         //   $.ajax({
-         //      url: url,
-         //      success: function(data) {
-         //         vectorSource.addFeatures(geoJSONFormat.readFeatures(data));
-         //      }
-         //   }); 
-         //},
       })
       vectorSource.once('change', fitMapOnFirstLoad);
-      
+      vectorSource.once('change', function() {
+         jsonEndLoad('avverk');
+      });
+         
       vectorLayer = new ol.layer.Vector({
-          title: 'added Layer',
-          source: vectorSource,
-          style: styleFunction,
+         title: 'added Layer',
+         source: vectorSource,
+         style: styleFunction,
       })
       map.addLayer(vectorLayer);
       vectorLayer.wmsSource = wmsAvverkning;
-   }
+      }
 
    
    
@@ -590,10 +604,15 @@ $(function(){
       var zoomStyle = zoom >= 12 ? stylesNyckelbiotoper : stylesInvisible;
       return zoomStyle[type];
    };   
+   jsonStartLoad('nyckelbiotoper');
    var vectorSourcesksNyckelbiotoper = new ol.source.Vector({
       url: "/data/sksNyckelbiotoper" + area + "/0",
       format: geoJSONFormat,
    })
+   vectorSourcesksNyckelbiotoper.once('change', function() {
+      jsonEndLoad('nyckelbiotoper');
+   });
+   
    var vectorLayerNyckelbiotoper = new ol.layer.Vector({
        title: 'Nyckelbiotoper',
        source: vectorSourcesksNyckelbiotoper,
@@ -636,16 +655,20 @@ $(function(){
       var zoomStyle = zoom >= 12 ? stylesNaturvarden : stylesInvisible;
       return zoomStyle[type];
    };   
+   jsonStartLoad('naturvarden');
    var vectorSourcesksNaturvarden = new ol.source.Vector({
       url: "/data/sksNaturvarden" + area + "/0",
       format: geoJSONFormat,
-   })
+   });
+   vectorSourcesksNaturvarden.once('change', function() {
+      jsonEndLoad('naturvarden');
+   });
    
    var vectorLayerNaturvarden = new ol.layer.Vector({
        title: 'Naturvarden',
        source: vectorSourcesksNaturvarden,
        style: styleFunctionNaturvarden,
-   })
+   });
    map.addLayer(vectorLayerNaturvarden);
    view.on('change:resolution', function(){
       var zoom = view.getZoom();

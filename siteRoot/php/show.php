@@ -56,6 +56,19 @@ function codeInclude()
          <a id="meta-closer" class="meta-closer"></a>
          <div id="meta-content" class="meta-content"></div>
       </div>
+      <div id="loading-indicator" class="loading-indicator">
+         <div id="loading-indicator-content" class="loading-indicator-content">
+            <div id="loading-indicator-avverk" class='loading-indicator-entry'>
+               <img src="/ajax-loader.gif" /><span>Avverkningsanmälningar</span>
+            </div>
+            <div id="loading-indicator-nyckelbiotoper" class='loading-indicator-entry'>
+               <img src="/ajax-loader.gif" /> <span>Nyckelbiotoper</span>
+            </div>
+            <div id="loading-indicator-naturvarden" class='loading-indicator-entry'>
+               <img src="/ajax-loader.gif" /> <span>Naturvärden</span>
+            </div>
+         </div>
+      </div>
 	</div>
    <div id="meta-short" class="meta-short" style="display:none"></div>
 	
