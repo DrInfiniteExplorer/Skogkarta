@@ -514,6 +514,7 @@ $(function(){
       var pixel = event.pixel;
       var layer;
       var selectedFeature = map.forEachFeatureAtPixel(pixel, function(feature, _layer) {
+         if(_layer.ignoreHitDetection == true) return;
          layer = _layer;
          return feature;
       });
@@ -717,12 +718,13 @@ $(function(){
          new ol.geom.Point(coordinates) : null);
    });
    
-   var trackingOverlay = new ol.layer.Vector({
+   var trackingLayer = new ol.layer.Vector({
      source: new ol.source.Vector({
-       features: [accuracyFeature, positionFeature]
+       features: [accuracyFeature, positionFeature],
      })
    });
-   map.addLayer(trackingOverlay);
+   trackingLayer.ignoreHitDetection = true;
+   map.addLayer(trackingLayer);
    
    /* End Geolocation */
 	
