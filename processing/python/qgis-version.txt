@@ -1,1 +1,0 @@
-QGIS-OSGeo4W-2.6.0-1-Setup-x86_64.exe
