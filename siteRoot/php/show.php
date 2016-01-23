@@ -35,8 +35,8 @@ function codeInclude()
 
 	<script type="text/javascript"  src="/js/jquery-2.0.3.min.js"> </script>
    <script src="/js/proj4.js" type="text/javascript"></script>
-   <script src="/js/ol-debug.js" type="text/javascript"></script>
-   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyBRTpJi_z1mwjqsSLYqxuzgyWomIiKLjDA&amp;sensor=false"></script>
+   <script src="/js/ol.js" type="text/javascript"></script>
+   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyChiDJ9w7OnYl0DWlcYCdmXnG02GyVxgxE&amp;sensor=false"></script>
     
     <?php codeInclude(); ?>
     
