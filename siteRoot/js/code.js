@@ -224,10 +224,13 @@ $(function(){
    };
    
    proj4.defs("EPSG:3006", "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+   var projection = ol.proj.get('EPSG:3006');
+   projection.setExtent([-1200000.000000, 4305696.000000, 2994304.000000, 8500000.000000])
 
    var geoJSONFormat = new ol.format.GeoJSON({
      defaultDataProjection: 'EPSG:3006'
    })
+   
       
       
       
@@ -326,9 +329,15 @@ $(function(){
       source: new ol.source.MapQuest({layer: 'sat'}),
       name: 'MapQuest SAT'
     })
-
+    
+   var layerTerrang = new ol.layer.Tile({
+      name: 'Terrängkartan'
+   })
+ 
+	
    var baseLayerList = [
       googleHackLayer,
+      layerTerrang,
       bingMapLayer,
       layerOSM,
       layerMQOSM,
@@ -566,6 +575,7 @@ $(function(){
         bingMapLayer,
         layerMQOSM,
         layerMQSat,
+        layerTerrang,
      ],
      overlays: [ metaOverlay],
      target: olMapDiv,
@@ -573,6 +583,54 @@ $(function(){
      interactions: interactions,
      controls : controls,
    });
+
+   $.get(('/proxy/?url=https%3A%2F%2Fapi.lantmateriet.se%2Fopen%2Ftopowebb-ccby%2Fv1%2Fwmts%2Ftoken%2Fa068b9a7e44a8c364a8b1b8fbb972cd%2F%3Frequest%3DGetCapabilities%26version%3D1.0.0%26service%3Dwmts'), function(response) {
+      var contents = response.contents;
+      var parser = new ol.format.WMTSCapabilities();
+      var result = parser.read(contents);
+
+      var layerName = result.Contents.Layer[0].Identifier;
+      var tmsName = result.Contents.Layer[0].TileMatrixSetLink[0].TileMatrixSet
+      var TMS = null;
+      for(index=0;index<result.Contents.TileMatrixSet.length;index++)
+      {
+         var val = result.Contents.TileMatrixSet[index];
+         if(val.Identifier == tmsName) {
+            TMS = val;
+         }
+      }
+
+      var projectionExtent = projection.getExtent();
+      var widthInMeters = ol.extent.getWidth(projectionExtent);
+      var resolutions = [];
+      var matrixIds = [];
+      for (var z = 0; z < TMS.TileMatrix.length; ++z) {
+         // generate resolutions and matrixIds arrays for this WMTS
+         var pixelsAtLayer = TMS.TileMatrix[z].MatrixWidth * TMS.TileMatrix[z].TileWidth
+         var size = widthInMeters / pixelsAtLayer;
+         resolutions[z] = size;
+         matrixIds[z] = z;
+      }
+      
+      var terrangSource = new ol.source.WMTS({
+         url: result.OperationsMetadata.GetTile.DCP.HTTP.Get[0].href,
+         layer: layerName,
+         matrixSet: tmsName,
+         format: result.Contents.Layer[0].Format[0],
+         projection: projection,
+         tileGrid: new ol.tilegrid.WMTS({
+            origin: ol.extent.getTopLeft(projectionExtent),
+            extent: projectionExtent,
+            resolutions: resolutions,
+            matrixIds: matrixIds
+         }),
+         style: 'default',
+         wrapX: true
+      })
+
+      layerTerrang.setMaxResolution(resolutions[0])
+      layerTerrang.setSource(terrangSource)
+   })
    
    map.on('click', grabFeatureForMetadata);
    

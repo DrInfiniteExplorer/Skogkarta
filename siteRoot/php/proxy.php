@@ -138,7 +138,7 @@
 // Change these configuration options if needed, see above descriptions for info.
 $enable_jsonp    = false;
 $enable_native   = false;
-$valid_url_regex = '/^http:\/\/geodpags\.skogsstyrelsen\.se/';
+$valid_url_regex = '/^http:\/\/geodpags\.skogsstyrelsen\.se|^https:\/\/api\.lantmateriet\.se/';
 
 // ############################################################################
 
@@ -177,6 +177,7 @@ if ( !$url ) {
     curl_setopt( $ch, CURLOPT_COOKIE, $cookie );
   }
   
+  curl_setopt ($ch, CURLOPT_CAINFO, dirname(__FILE__)."/cacert.pem");
   curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
   curl_setopt( $ch, CURLOPT_HEADER, true );
   curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
