@@ -3,3 +3,7 @@
 /processing/ZipFiles
 /processing/Unzipped
 /siteRoot/data/dynamic
+
+node_modules
+/npm-host/public/data
+

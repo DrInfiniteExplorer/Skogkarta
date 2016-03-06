@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  p Skogskartan
+
+  if news
+    each entry in news
+      p= entry
+  
+  each key, value in areas
+    a(href=key)= value
+    br

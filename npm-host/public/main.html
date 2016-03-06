@@ -1,44 +1,19 @@
-﻿<?php
-function param($a)
-{
-   if(array_key_exists($a, $_REQUEST)){
-      return $_REQUEST[$a];
-   }
-}
-function codeInclude()
-{
-   $path = "code.js";
-    if(param("area")) {
-        $path_parts = pathinfo(param("area"));
-        $file_name  = $path_parts['basename'];
-        $area  = $file_name;
-        $path = "/code/" . $area;
-    if(param("data")) {
-        $path_parts = pathinfo(param("data"));
-        $file_name  = $path_parts['basename'];
-        $data  = $file_name;
-        $path = $path . "/" . $data;
-    }
-    }
-    echo("<script type='text/javascript' src='$path'></script>");
-}
-
-?>
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>  
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<title>Skogsdata!</title>
-	<link type="text/css" rel="stylesheet" media="screen"  href="/css/default.css" />
-   <link rel="stylesheet" href="/css/ol.css" type="text/css">
+	<link type="text/css" rel="stylesheet" media="screen"  href="/stylesheets/default.css" />
+   <link rel="stylesheet" href="/stylesheets/ol.css" type="text/css">
 
-	<script type="text/javascript"  src="/js/jquery-2.0.3.min.js"> </script>
-   <script src="/js/proj4.js" type="text/javascript"></script>
-   <script src="/js/ol.js" type="text/javascript"></script>
+	<script type="text/javascript"  src="/javascripts/jquery-2.0.3.min.js"> </script>
+   <script src="/javascripts/proj4.js" type="text/javascript"></script>
+   <script src="/javascripts/ol.js" type="text/javascript"></script>
+   <!--
    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyChiDJ9w7OnYl0DWlcYCdmXnG02GyVxgxE&amp;sensor=false"></script>
-    
-    <?php codeInclude(); ?>
+   -->
+   <script type="text/javascript"  src="/javascripts/code.js"> </script>
     
   </head>
   
@@ -59,13 +34,13 @@ function codeInclude()
       <div id="loading-indicator" class="loading-indicator">
          <div id="loading-indicator-content" class="loading-indicator-content">
             <div id="loading-indicator-avverk" class='loading-indicator-entry'>
-               <img src="/ajax-loader.gif" /><span>Avverkningsanmälningar</span>
+               <img src="images/ajax-loader.gif" /><span>Avverkningsanmälningar</span>
             </div>
             <div id="loading-indicator-nyckelbiotoper" class='loading-indicator-entry'>
-               <img src="/ajax-loader.gif" /> <span>Nyckelbiotoper</span>
+               <img src="images/ajax-loader.gif" /> <span>Nyckelbiotoper</span>
             </div>
             <div id="loading-indicator-naturvarden" class='loading-indicator-entry'>
-               <img src="/ajax-loader.gif" /> <span>Naturvärden</span>
+               <img src="images/ajax-loader.gif" /> <span>Naturvärden</span>
             </div>
          </div>
       </div>

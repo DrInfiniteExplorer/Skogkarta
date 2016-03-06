@@ -1,12 +1,4 @@
-﻿<?php
-function param($a)
-{ if(array_key_exists($a, $_REQUEST)){ return $_REQUEST[$a]; } }
-
-$area = param("area");
-if($area) { $path_parts = pathinfo($area); $file_name  = $path_parts['basename']; $area  = $file_name; }
-else { header("Location: /"); exit; }
-?>
-
+﻿
 $(function(){
 
 /**
@@ -109,7 +101,7 @@ $(function(){
       jsonStartLoad('avverk');
       dataSet = dataSetName;
       updateLinkState();
-      var url = "/data/sksAvverkAnm" + area + "/" + dataSetName;
+      var url = "/data/sksAvverkAnm" + area + "/" + dataSetName + ".json";
 
       map.removeLayer(vectorLayer);
 
@@ -262,8 +254,11 @@ $(function(){
       maxZoom: 19
     })
   });
-
-   var gmap = new google.maps.Map(document.getElementById('gmap'), {
+  
+  var gmap;
+  var googleHackLayer
+  if(window.google){
+      gmap = new google.maps.Map(document.getElementById('gmap'), {
       disableDefaultUI: true,
       keyboardShortcuts: false,
       draggable: false,
@@ -271,7 +266,9 @@ $(function(){
       scrollwheel: false,
       streetViewControl: false
     });
-    gmap.setMapTypeId(google.maps.MapTypeId.HYBRID);
+    gmap.setMapTypeId(google.maps.MapTypeId.HYBRID);	  
+  }
+
     
    var view = new ol.View({
       center: ol.proj.transform([mapCenterX,mapCenterY], 'EPSG:3006', 'EPSG:900913'),
@@ -287,31 +284,32 @@ $(function(){
       var zoomStyle = zoom >= 15 ? stylesZoom15 : stylesZoom0;
       return zoomStyle[type];
    };   
-   
-   var googleHackLayer = {
-      name:'Google',
-      enableGoogleSync:true,
-      get:function(key) { return this[key]; },
-      setVisible:function(value) {
-         this.enableGoogleSync = value;
-         var val = value ? 'visible' : 'hidden';
-         var a = $('#gmap');
-         a.css('visibility', val);
-         this.updateCenter();
-         this.updateZoom();
-      },
-      updateCenter:function() {
-         if(!googleHackLayer.enableGoogleSync) return;
-         var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
-         gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
-      },
-      updateZoom:function() {
-         if(!googleHackLayer.enableGoogleSync) return;
-         gmap.setZoom(view.getZoom());
-      },
-   };
-   view.on('change:center', googleHackLayer.updateCenter);
-   view.on('change:resolution', googleHackLayer.updateZoom);
+   if(gmap){
+	   googleHackLayer = {
+		  name:'Google',
+		  enableGoogleSync:true,
+		  get:function(key) { return this[key]; },
+		  setVisible:function(value) {
+			 this.enableGoogleSync = value;
+			 var val = value ? 'visible' : 'hidden';
+			 var a = $('#gmap');
+			 a.css('visibility', val);
+			 this.updateCenter();
+			 this.updateZoom();
+		  },
+		  updateCenter:function() {
+			 if(!googleHackLayer.enableGoogleSync) return;
+			 var center = ol.proj.transform(view.getCenter(), 'EPSG:3857', 'EPSG:4326');
+			 gmap.setCenter(new google.maps.LatLng(center[1], center[0]));
+		  },
+		  updateZoom:function() {
+			 if(!googleHackLayer.enableGoogleSync) return;
+			 gmap.setZoom(view.getZoom());
+		  },
+	   };
+	   view.on('change:center', googleHackLayer.updateCenter);
+	   view.on('change:resolution', googleHackLayer.updateZoom);
+   }
          
    var layerOSM = new ol.layer.Tile({
        source: new ol.source.OSM(),
@@ -335,14 +333,17 @@ $(function(){
    })
  
 	
-   var baseLayerList = [
-      googleHackLayer,
-      layerTerrang,
+   var baseLayerList = [];
+   if(gmap){
+      baseLayerList = baseLayerList.concat([googleHackLayer])
+   }
+   baseLayerList = baseLayerList.concat([
       bingMapLayer,
+      layerTerrang,
       layerOSM,
       layerMQOSM,
       layerMQSat,
-   ];
+   ]);
 
    var selectBaseLayer = new app.SelectControl({
       optionTexts:$.map(baseLayerList, function(layer, index) { return layer.get('name'); }),
@@ -537,7 +538,7 @@ $(function(){
          featureUrl = encodeURIComponent(featureUrl);
          var url = '/proxy/?url=' + featureUrl;
          $.getJSON(url, function(data) {
-            var feature = data.contents.features[0];
+            var feature = data.features[0];
             setMetadata(feature.properties, event.coordinate);
             updateFeature(selectedFeature, feature)
          }).fail(function(err){
@@ -585,7 +586,7 @@ $(function(){
    });
 
    $.get(('/proxy/?url=https%3A%2F%2Fapi.lantmateriet.se%2Fopen%2Ftopowebb-ccby%2Fv1%2Fwmts%2Ftoken%2Fa068b9a7e44a8c364a8b1b8fbb972cd%2F%3Frequest%3DGetCapabilities%26version%3D1.0.0%26service%3Dwmts'), function(response) {
-      var contents = response.contents;
+      var contents = response;
       var parser = new ol.format.WMTSCapabilities();
       var result = parser.read(contents);
 
@@ -665,7 +666,7 @@ $(function(){
    };   
    jsonStartLoad('nyckelbiotoper');
    var vectorSourcesksNyckelbiotoper = new ol.source.Vector({
-      url: "/data/sksNyckelbiotoper" + area + "/0",
+      url: "/data/sksNyckelbiotoper" + area + "/0.json",
       format: geoJSONFormat,
    })
    vectorSourcesksNyckelbiotoper.once('change', function() {
@@ -716,7 +717,7 @@ $(function(){
    };   
    jsonStartLoad('naturvarden');
    var vectorSourcesksNaturvarden = new ol.source.Vector({
-      url: "/data/sksNaturvarden" + area + "/0",
+      url: "/data/sksNaturvarden" + area + "/0.json",
       format: geoJSONFormat,
    });
    vectorSourcesksNaturvarden.once('change', function() {

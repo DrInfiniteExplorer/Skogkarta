@@ -2,10 +2,11 @@
 call msys 2>NUL
 call Regions.bat
 
+set DIR=../npm-host/public/data
+
 goto Main
 
-
 :Main
-   d:\Program\mingw\msys\1.0\bin\mkdir.exe -p ../siteRoot/data/dynamic 2>NUL
-   cp ./json/* ../siteRoot/data/dynamic --force --recursive --verbose
+   d:\Program\mingw\msys\1.0\bin\mkdir.exe -p %DIR% 2>NUL
+   cp ./json/* %DIR% --force --recursive --verbose
    goto :EOF

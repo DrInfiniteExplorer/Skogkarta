@@ -16,7 +16,7 @@ goto Main
 :UnzipDir 
    
    mkdir %2\%~n1 2>NUL
-   unzip.exe -o %1 -d %2\%~n1
+   7z.exe x %1 -o%2\%~n1 -aoa
    goto :EOF
    
 :Main
