@@ -34,6 +34,11 @@ router.get('/:region', function(req, res, next) {
   res.sendFile('main.html', {root: path});  
 });
 
+router.get('/show/:region', function(req, res, next) {
+  var id = req.params.region;
+  res.redirect('/' + id);  
+});
+
 
 
 //router.get('/data/:region/:type/:age', function(req, res, next) {
