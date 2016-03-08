@@ -1,8 +1,7 @@
 
-/processing/json
+/processing/Json
 /processing/ZipFiles
-/processing/Unzipped
-/siteRoot/data/dynamic
+/processing/UnzippedFiles
 
 node_modules
 /npm-host/public/data
