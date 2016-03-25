@@ -101,7 +101,7 @@ $(function(){
       jsonStartLoad('avverk');
       dataSet = dataSetName;
       updateLinkState();
-      var url = "/data/AvverkAnm/sksAvverkAnm" + area + "/" + dataSetName + ".json";
+      var url = "/data/sksAvverkAnm" + area + "/" + dataSetName + ".json";
 
       map.removeLayer(vectorLayer);
 
@@ -666,7 +666,7 @@ $(function(){
    };   
    jsonStartLoad('nyckelbiotoper');
    var vectorSourcesksNyckelbiotoper = new ol.source.Vector({
-      url: "/data/Nyckelbiotoper/sksNyckelbiotoper" + area + "/0.json",
+      url: "/data/sksNyckelbiotoper" + area + "/0.json",
       format: geoJSONFormat,
    })
    vectorSourcesksNyckelbiotoper.once('change', function() {
@@ -717,7 +717,7 @@ $(function(){
    };   
    jsonStartLoad('naturvarden');
    var vectorSourcesksNaturvarden = new ol.source.Vector({
-      url: "/data/Naturvarden/sksNaturvarden" + area + "/0.json",
+      url: "/data/sksNaturvarden" + area + "/0.json",
       format: geoJSONFormat,
    });
    vectorSourcesksNaturvarden.once('change', function() {
