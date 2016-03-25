@@ -409,7 +409,8 @@ $(function(){
       legendDiv.show();
    }, 1000);
    
-   function addLegend(displayName, colorOutline, colorFill) {
+   
+   function addLegendStyle(legendKey, colorOutline, colorFill) {
       if(!colorFill)
       {
          var style = colorOutline;
@@ -420,14 +421,28 @@ $(function(){
          colorOutline = stroke.getColor();
          colorFill = fill.getColor();
       }
+      legendKey.css({ 'border-color': colorOutline, 'border-width':'2px', 'border-style':'solid', 'background-color': colorFill});
+   }
+    function addLegendImage(legendKey, url) {
+        var img = $('<img>'); //Equivalent: $(document.createElement('img'))
+        img.attr('src', url);
+        img.appendTo(legendKey);       
+    }
+   function addLegend(displayName, a, b) {
       var row = $('<li>').addClass('legend-list-item');
       var legendKey = $('<div>').addClass('legend-key');
       var legendName=$('<span>');
       legendName.text(displayName);
-      legendKey.css({ 'border-color': colorOutline, 'border-width':'2px', 'border-style':'solid', 'background-color': colorFill});
       row.append(legendKey);
       row.append(displayName);
-      legendList.append(row);
+      legendList.append(row);       
+
+       if(typeof(a) == "string" && a.startsWith("http://")) {
+           addLegendImage(legendKey, a);           
+       }
+       else {
+           addLegendStyle(legendKey, a, b);
+       }
    }
    
    addLegend('Avverkningsanmälan', stylesZoom0);
@@ -520,6 +535,50 @@ $(function(){
       originalFeature.isUpdated = true;
    }
    
+   function selectVectorFeature(selectedFeature, layer, coordinate) {
+      var attributes = selectedFeature && selectedFeature.getProperties();
+      var isUpdated = selectedFeature && selectedFeature.isUpdated
+      if(!isUpdated && layer && layer.wmsSource && layer.wmsSource.getGetFeatureInfoUrl){
+         var source = layer.wmsSource;
+         var featureUrl = source.getGetFeatureInfoUrl(
+            coordinate, view.getResolution(),
+            'EPSG:3857', {'INFO_FORMAT':'application/geojson'});
+         featureUrl = encodeURIComponent(featureUrl);
+         var url = '/proxy/?url=' + featureUrl;
+         $.getJSON(url, function(data) {
+            var feature = data.features[0];
+            setMetadata(feature.properties, coordinate);
+            updateFeature(selectedFeature, feature)
+         }).fail(function(err){
+            console.log("Error");
+            console.log(err);
+         });
+         return;
+      }
+      setMetadata(attributes, coordinate);       
+   }
+   
+    function selectWmsFeature(pixel, coordinate) {
+
+        map.getLayers().forEach(function(layer) {
+            if(!layer.getSource().getGetFeatureInfoUrl) return;
+            var source = layer.getSource();
+            var featureUrl = source.getGetFeatureInfoUrl(
+            coordinate, view.getResolution(),
+            'EPSG:3857', {'INFO_FORMAT':'application/geojson'});
+            featureUrl = encodeURIComponent(featureUrl);
+            var url = '/proxy/?url=' + featureUrl;
+            $.getJSON(url, function(data) {
+                if(data.features.length == 0) return;
+                var feature = data.features[0];
+                setMetadata(feature.properties, coordinate);
+            }).fail(function(err){
+                console.log("Error");
+                console.log(err);
+            });
+        })
+    }
+   
    function grabFeatureForMetadata(event) {
       var pixel = event.pixel;
       var layer;
@@ -528,27 +587,13 @@ $(function(){
          layer = _layer;
          return feature;
       });
-      var attributes = selectedFeature && selectedFeature.getProperties();
-      var isUpdated = selectedFeature && selectedFeature.isUpdated
-      if(!isUpdated && layer && layer.wmsSource && layer.wmsSource.getGetFeatureInfoUrl){
-         var source = layer.wmsSource;
-         var featureUrl = source.getGetFeatureInfoUrl(
-            event.coordinate, view.getResolution(),
-            'EPSG:3857', {'INFO_FORMAT':'application/geojson'});
-         featureUrl = encodeURIComponent(featureUrl);
-         var url = '/proxy/?url=' + featureUrl;
-         $.getJSON(url, function(data) {
-            var feature = data.features[0];
-            setMetadata(feature.properties, event.coordinate);
-            updateFeature(selectedFeature, feature)
-         }).fail(function(err){
-            console.log("Error");
-            console.log(err);
-         });
-         return;
+      setMetadata(null, event.coordinate);       
+      if(selectedFeature) {
+          selectVectorFeature(selectedFeature, layer, event.coordinate);
       }
-      
-      setMetadata(attributes, event.coordinate);
+      else {
+          selectWmsFeature(pixel, event.coordinate);
+      }
    }
    
    /* End metadata*/
@@ -682,14 +727,27 @@ $(function(){
    view.on('change:resolution', function(){
       var zoom = view.getZoom();
       vectorLayerNyckelbiotoper.setVisible(zoom >= 12);
-      
    });
    var wmsNyckelbiotoper = new ol.source.TileWMS({
      url: 'http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaNyckelbiotop/MapServer/WmsServer?',
      params: {'LAYERS': 'Nyckelbiotop_Skogsstyrelsen'}
    });
    vectorLayerNyckelbiotoper.wmsSource = wmsNyckelbiotoper;
-   
+
+
+
+   var wmsBolagensNyckelbiotoperSource = new ol.source.TileWMS({
+     url: 'http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaSkogsbruknyckelbiotop/MapServer/WmsServer?',
+     params: {'LAYERS': 'Storskogsbrukets_Nyckelbiotoper'}
+   });
+   var wmsBolagensNyckelbiotoper = new ol.layer.Tile({
+          source: wmsBolagensNyckelbiotoperSource
+    })
+    map.addLayer(wmsBolagensNyckelbiotoper)
+    wmsBolagensNyckelbiotoper.wmsSource = wmsBolagensNyckelbiotoperSource
+
+    // Fix obtaining legend automatically. Do it in the future. Glorious future.
+    addLegend('Bolagens Nyckelbiotoper', "http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaSkogsbruknyckelbiotop/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Storskogsbrukets_Nyckelbiotoper");
    
    
    
