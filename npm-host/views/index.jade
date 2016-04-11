@@ -5,8 +5,7 @@ block content
   p Skogskartan
 
   if news
-    each entry in news
-      p= entry
+    div!= news
   
   each key, value in areas
     a(href=key)= value
