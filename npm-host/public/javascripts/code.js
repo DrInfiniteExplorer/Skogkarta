@@ -747,6 +747,11 @@ $(function () {
   // Fix obtaining legend automatically. Do it in the future. Glorious future.
   addLegend('Bolagens Nyckelbiotoper', "http://geodpags.skogsstyrelsen.se/arcgis/services/Geodataportal/GeodataportalVisaSkogsbruknyckelbiotop/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Storskogsbrukets_Nyckelbiotoper");
 
+  view.on('change:resolution', function () {
+    var zoom = view.getZoom();
+    wmsBolagensNyckelbiotoper.setVisible(zoom >= 12);
+  });
+
 
 
   /* **Naturvärden** */
