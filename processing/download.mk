@@ -6,7 +6,8 @@ download-$(TargetFolder):
 	mkdir -p $(TargetFolder)
 	rm -f $(TargetFolder)/$(XmlFile)
 	cd $(TargetFolder) && wget $(Url)
-	cd $(TargetFolder) && wget -i $(XmlFile) --force-html --base=$(BaseUrl) --timestamping --ignore-length || true
+	cd $(TargetFolder) && grep $(BaseUrl) $(XmlFile) > $(XmlFile)_2
+	cd $(TargetFolder) && wget -i $(XmlFile)_2 --force-html --timestamping --ignore-length || true
 
 .PHONY::download-$(TargetFolder)
 DownloadList:=$(DownloadList) download-$(TargetFolder)
