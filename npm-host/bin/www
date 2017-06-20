@@ -9,9 +9,11 @@ var debug = require('debug')('npm-host:server');
 var http = require('http');
 var https = require('https');
 var fs = require('fs')
+var keyPath = require('path').join(__dirname, './newkey.pem')
+var certPath = require('path').join(__dirname, './cert.pem')
 var httpsConfig = {
-	key: fs.readFileSync('newkey.pem'),
-	cert: fs.readFileSync('cert.pem'),
+	key: fs.readFileSync(keyPath),
+	cert: fs.readFileSync(certPath),
 }
 
 /**
