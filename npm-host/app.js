@@ -29,6 +29,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req,res, next){
+	if(req.headers.host != 'www.skogskartan.nu')
+	{
+		res.redirect('https://www.skogskartan.nu' + req.url);
+		return
+	}
+	next()
+})
+
 app.use('/', routes);
 app.use('/', map);
 
