@@ -1,0 +1,1 @@
+sudo certbot certonly --webroot -w /root/Skogkarta/npm-host/public/ -d luben.se -d www.luben.se -d skog.luben.se -d www.skog.luben.se -d skogskartan.nu -d www.skogskartan.nu
